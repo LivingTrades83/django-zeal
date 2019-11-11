@@ -1,0 +1,321 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+
+<script>
+    {% block jquery %}
+        var endpoint = '/api/data/'
+        var elementData = []
+        var phData = []
+        var labels = []
+        var days = []
+        $.ajax({
+            method: "GET",
+            url: endpoint,
+            success: function(data){
+                labels = data.labels
+                days = data.days
+                elementData = data.elementData
+                phData = data.phData
+
+                var ctx = document.getElementById('myChart').getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Elements Overview',
+                            data: elementData,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+
+                /* pH Chart */
+                var ph = document.getElementById('phChart').getContext('2d');
+                var phChart = new Chart(ph, {
+                    type: 'line',
+                    data: {
+                        labels: days,
+                        datasets: [{
+                            label: 'pH Trend',
+                            data: phData,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            },
+            error: function(error_data){
+                console.log("error")
+                console.log(error_data)
+            }
+        })
+
+    {% endblock %}
+</script>
+
+{% block main_content %}
+    {% block breadcrumbs %}
+        <!-- Group Buttons // Coming Soon -->
+    {% endblock %}
+    <div class="row-main col-xs-12 col-sm-12 mt-3" >
+        <div class="row" >
+            <div class="col-sm-4 p-1">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Elements Overview</h5>
+                    <hr>
+                    <p class="card-text">
+                        <table border="0" class="custom-table">
+                            <thead>
+                                <tr >
+                                    <th class="table-header pb-3">
+                                        Element
+                                    </th>
+                                    <th class="table-header right-align pb-3">
+                                        Levels
+                                    </th>
+                                </tr>
+                            </thead>
+                                <tr>
+                                    <td title="Temperature for drinking should be around 12 degree celcius">Temperature</td>
+                                    <td class="right-align">25 &deg C</td>
+                                </tr>
+                                <tr>
+                                    <td title="Salinity levels of 0-600 mg/l in water is good for drinking">Salinity</td>
+                                    <td class="right-align">400 g/l</td>
+                                </tr>
+                                <tr>
+                                    <td>Turbudity</td>
+                                    <td class="right-align">3 NTU</td>
+                                </tr>
+                                <tr>
+                                    <td title="Drinking water should be between a pH of 6-8.5">pH</td>
+                                    <td class="right-align">6.5</td>
+                                </tr>
+                                <tr>
+                                    <td>Total Dissolved Solids</td>
+                                    <td class="right-align">300 mg/l</td>
+                                </tr>
+                                <tr>
+                                    <td>Oxidation Reduction Potential</td>
+                                    <td class="right-align">+300mv</td>
+                                </tr>
+                        </table>
+                    </p>
+                    <div class="button-group">
+                        <button class="button ml-5" id="report-button">Overview Report</button>
+                    </div>
+                  </div>
+                </div>
+            </div>
+            <div class="col-sm-4 p-1">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Graphical Analysis</h5>
+                    <hr>
+                    <h6 class="card-subtitle mb-2 text-muted">Overview</h6>
+                    <p class="card-text">
+                        <div>
+                            <canvas id="myChart" width="400" height="400"></canvas>
+                        </div>
+
+                    </p>
+                    <button class="button ml-5" id="report-button">Generate Report</button>
+                  </div>
+                </div>
+            </div>
+            <div class="col-sm-4 p-1">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">pH Content</h5>
+                    <hr>
+                    <h6 class="card-subtitle mb-2 text-muted">Overview</h6>
+                    <p class="card-text">
+                        <div>
+                            <canvas id="phChart" width="400" height="400"></canvas>
+                        </div>
+                    </p>
+                    <button class="button" id="report-button" style="margin-left: 25%">Analysis</button>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+        <div class="row-main col-xs-12 col-sm-12 mt-3" >
+        <div class="row" >
+            <div class="col-sm-4 p-1">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Salinity</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Elements Overview</h6>
+                    <p class="card-text">
+                        <table border="0" class="custom-table">
+
+                                <tr>
+                                    <td class="table-header">
+                                        Element
+                                    </td>
+                                    <td class="table-header right-align">
+                                        Levels
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Oxidation Potential</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                                <tr>
+                                    <td>pH</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                                <tr>
+                                    <td>Temperature</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                                <tr>
+                                    <td>Salinity</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                        </table>
+
+                    </p>
+                    <button class="button" id="report-button">Analysis</button>
+                    <br>
+                    <button class="button" id="report-button">Generate Report</button>
+                  </div>
+                </div>
+            </div>
+            <div class="col-sm-4 p-1">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Temperature</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Overview</h6>
+                    <p class="card-text">
+                        <table border="0" class="custom-table">
+
+                                <tr>
+                                    <td class="table-header">
+                                        Element
+                                    </td>
+                                    <td class="table-header right-align">
+                                        Levels
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Oxidation Potential</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                                <tr>
+                                    <td>pH</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                                <tr>
+                                    <td>Temperature</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                                <tr>
+                                    <td>Salinity</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                        </table>
+
+                    </p>
+                    <button class="button" id="report-button">Analysis</button>
+                    <br>
+                    <button class="button" id="report-button">Generate Report</button>
+                  </div>
+                </div>
+            </div>
+            <div class="col-sm-4 p-1">
+                <div class="card">
+                  <div class="card-body">
+                    <h5 class="card-title">Oxidation Potential</h5>
+                    <h6 class="card-subtitle mb-2 text-muted">Overview</h6>
+                    <p class="card-text">
+                        <table border="0" class="custom-table">
+
+                                <tr>
+                                    <td class="table-header">
+                                        Element
+                                    </td>
+                                    <td class="table-header right-align">
+                                        Levels
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>Oxidation Potential</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                                <tr>
+                                    <td>pH</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                                <tr>
+                                    <td>Temperature</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                                <tr>
+                                    <td>Salinity</td>
+                                    <td class="right-align">00</td>
+                                </tr>
+                        </table>
+
+                    </p>
+                    <button class="button" id="report-button">Analysis</button>
+                    <br>
+                    <button class="button" id="report-button">Generate Report</button>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock main_content %}
