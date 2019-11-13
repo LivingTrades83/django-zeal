@@ -10,6 +10,7 @@ pip-selfcheck.json
 # static-cdn/  # any collected static files
 smartwater/settings/local.py
 dashboard/dumps/
+smartwater/static/
 
 
 # Byte-compiled / optimized / DLL files
